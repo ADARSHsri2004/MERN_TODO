@@ -6,7 +6,9 @@ const { validateSignin, validateSignup } = require('../middlewares/inputValidate
 require('dotenv').config();
 const jwt = require('jsonwebtoken');
 const secretKey = process.env.JWT_SECRET_KEY;
+
 //signup
+
 router.post('/signup', validateSignup, async (req, res) => {
     try {
 
