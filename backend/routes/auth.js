@@ -2,9 +2,10 @@ const router = require('express').Router();
 const User = require('../models/user');
 const List = require('../models/list');
 const bcrypt = require('bcryptjs');
+const { validateSignin, validateSignup } = require('../middlewares/inputValidate');
 
 //signup
-router.post('/register', async (req, res) => {
+router.post('/signup', validateSignup, async (req, res) => {
     try {
         const { email, username, password } = req.body
         const hashPassword = bcrypt.hashSync(password)
@@ -17,7 +18,7 @@ router.post('/register', async (req, res) => {
     }
 })
 //signIN
-router.post('/signin', async (req, res) => {
+router.post('/signin', validateSignin, async (req, res) => {
     try {
         const user = await User.findOne({
             email: req.body.email
