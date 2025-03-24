@@ -46,14 +46,21 @@ router.post('/signin', validateSignin, async (req, res) => {
         if (!user) {
             return res.status(400).json({ message: "Please Signup first" })
         }
+        //verify password
         const isMatch = bcrypt.compareSync(req.body.password, user.password)
         if (!isMatch) {
             return res.status(400).json({ message: "Invalid Password" })
         }
+        //generate JWT token
+        const token = jwt.sign(
+            { email: user.email },
+            secretKey,
+            { expiresIn: '1h' } // Token expires in 1 hour
+        );
         const { password, ...others } = user._doc
-        res.status(200).json({ others })
+        res.status(200).json({message:"Login successful",token, user:others })
     } catch (error) {
-        res.status(400).json({ message: "error" })
+        res.status(500).json({ message: "server error during login" })
     }
 })
 module.exports = router;
