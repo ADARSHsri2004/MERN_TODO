@@ -14,7 +14,7 @@ router.post('/signup', validateSignup, async (req, res) => {
 
         const { email, username, password } = req.body
         //first check if already exists
-        console.log(email)
+
         const existingUser = await User.findOne({ email })
         if (existingUser) {
             return res.status(400).json({ message: "User already exists" })
@@ -24,9 +24,15 @@ router.post('/signup', validateSignup, async (req, res) => {
         await user.save()
         //generate jwt token
         const token = jwt.sign({ email: user.email }, secretKey, { expiresIn: '1h' })
+        // Store token in an HTTP-only cookie
+        res.cookie("token", token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production", // Use secure cookies in production
+            sameSite: "strict", // Prevent CSRF attacks
+            maxAge: 3600000 // 1 hour
+        });
         res.status(201).json({
             message: "user created successfully",
-            token,
             user: {
                 email: user.email,
                 username: user.username,
@@ -36,7 +42,7 @@ router.post('/signup', validateSignup, async (req, res) => {
 
     } catch (error) {
         console.log(error)
-        res.status(400).json({ message: "server error during signup",error })
+        res.status(400).json({ message: "server error during signup", error })
     }
 })
 //signIN
@@ -59,10 +65,23 @@ router.post('/signin', validateSignin, async (req, res) => {
             secretKey,
             { expiresIn: '1h' } // Token expires in 1 hour
         );
+        // Store token in an HTTP-only cookie
+        res.cookie("token", token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production", // Use secure cookies in production
+            sameSite: "strict", // Prevent CSRF attacks
+            maxAge: 3600000 // 1 hour
+        });
         const { password, ...others } = user._doc
-        res.status(200).json({message:"Login successful",token, user:others })
+        res.status(200).json({ message: "Login successful", user: others })
     } catch (error) {
         res.status(500).json({ message: "server error during login" })
     }
 })
+//logout
+router.post("/logout", (req, res) => {
+    res.clearCookie("token", { httpOnly: true, sameSite: "strict" });
+    res.json({ message: "Logged out successfully" });
+});
+
 module.exports = router;

@@ -3,9 +3,7 @@ const jwt = require('jsonwebtoken');
 const secretKey = process.env.JWT_SECRET_KEY;
 
 const authJWT = (req, res, next) => {
-    const token = req.headers.authorization;
-    const words = token.split(" ");
-    const jwtToken = words[1];
+    const jwtToken = req.cookies.token;
     if (!jwtToken) {
         return res.status(401).json({ message: "Unauthorized" });
     }

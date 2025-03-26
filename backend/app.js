@@ -6,7 +6,12 @@ const userModel = require('./models/user');
 const auth = require('./routes/auth')
 const list = require('./routes/list')
 const cors = require('cors')
-app.use(cors())
+const cookieParser = require("cookie-parser");
+app.use(cors({
+    origin: "http://localhost:5173", // Frontend URL
+    credentials: true // Allow cookies
+}));
+
 conn()
 app.use(express.json());
 app.use('/api/v1', auth)

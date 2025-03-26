@@ -21,17 +21,19 @@ export default function Signup() {
         try {
             const url = "http://localhost:3005/api/v1/signup"
             const response = await fetch(url, {
-                method: "POST", headers: {
+                method: "POST",
+                headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify(inputs)
+                body: JSON.stringify(inputs),
+                credentials: "include" // 🔹 IMPORTANT: Allows cookies to be sent
 
             })
             const result = await response.json()
-            if (!result.error) {
+            if (response.status === 201) {
                 navigate("/")
             }
-            console.log(result)
+
         } catch (error) {
             console.log(error)
         }

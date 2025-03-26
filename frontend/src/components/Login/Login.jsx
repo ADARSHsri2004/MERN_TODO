@@ -1,8 +1,43 @@
 import { LogIn } from "lucide-react";
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function Login() {
+    //signup logic form usign state
+    const [inputs, setinputs] = useState(
+        {
+            email: "",
+            password: ""
+        }
+    )
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setinputs(prev => ({ ...prev, [name]: value }));
+    }
+    const navigate = useNavigate()
+    const handleLogin = async (e) => {
+        e.preventDefault()
+        try {
+            const url = "http://localhost:3005/api/v1/signin"
+            const response = await fetch(url, {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(inputs),
+                credentials: "include" // 🔹 IMPORTANT: Allows cookies to be sent
+
+            })
+            const result = await response.json()
+            console.log(result)
+            if (response.status === 200) {
+                navigate("/")
+            }
+
+        } catch (error) {
+            console.log(error)
+        }
+    }
     return (
         <div className="min-h-screen flex items-center justify-center bg-amber-100 px-4">
             {/* Login Form Card */}
@@ -13,15 +48,21 @@ export default function Login() {
                 <h2 className="text-2xl font-bold text-gray-800 text-center">Welcome Back</h2>
                 <p className="text-sm text-gray-600 text-center mt-2">Log in to access your tasks.</p>
 
-                <form className="mt-6 space-y-4">
+                <form onSubmit={handleLogin} className="mt-6 space-y-4">
                     <input
                         type="email"
                         placeholder="Email"
+                        name="email"
+                        onChange={handleChange}
+                        value={inputs.email}
                         className="w-full p-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                     <input
                         type="password"
                         placeholder="Password"
+                        name="password"
+                        onChange={handleChange}
+                        value={inputs.password}
                         className="w-full p-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                     <button
