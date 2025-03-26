@@ -14,6 +14,7 @@ router.post('/signup', validateSignup, async (req, res) => {
 
         const { email, username, password } = req.body
         //first check if already exists
+        console.log(email)
         const existingUser = await User.findOne({ email })
         if (existingUser) {
             return res.status(400).json({ message: "User already exists" })
@@ -34,7 +35,8 @@ router.post('/signup', validateSignup, async (req, res) => {
         })
 
     } catch (error) {
-        res.status(400).json({ message: "server error during signup" })
+        console.log(error)
+        res.status(400).json({ message: "server error during signup",error })
     }
 })
 //signIN
