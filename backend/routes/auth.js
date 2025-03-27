@@ -80,8 +80,13 @@ router.post('/signin', validateSignin, async (req, res) => {
 })
 //logout
 router.post("/logout", (req, res) => {
-    res.clearCookie("token", { httpOnly: true, sameSite: "strict" });
-    res.json({ message: "Logged out successfully" });
+    try {
+        res.clearCookie("token", { httpOnly: true, sameSite: "strict" });
+        res.status(201).json({ message: "Logged out successfully" });
+    } catch (error) {
+        res.status(500).json({ message: "server error during logout" });
+    }
+
 });
 
 module.exports = router;

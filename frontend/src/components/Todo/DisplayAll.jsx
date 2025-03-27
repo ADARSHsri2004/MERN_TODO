@@ -1,7 +1,20 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { CheckCircle, Circle, Trash2, Edit, PlusCircle, ListChecks } from "lucide-react";
-
+import { useNavigate } from "react-router-dom";
+import { login, logout } from "../../context/AuthSlices";
+import { useDispatch, useSelector } from "react-redux";
 export default function DisplayAll() {
+const isLoggedIn = useSelector((state) => state.auth.isLoggedIn)
+
+  const navigate = useNavigate();
+  useEffect(() => {
+    if(!isLoggedIn)
+    navigate('/login')
+
+  }, [isLoggedIn])
+  
+
+
   const [tasks, setTasks] = useState([
     { id: 1, title: "Finish Project", description: "Complete the React project for submission.", completed: false },
     { id: 2, title: "Buy Groceries", description: "Get milk, eggs, and bread from the store.", completed: true },

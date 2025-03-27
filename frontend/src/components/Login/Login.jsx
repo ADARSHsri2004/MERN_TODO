@@ -1,6 +1,8 @@
 import { LogIn } from "lucide-react";
 import React, { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
+import { login, logout } from "../../context/AuthSlices";
 
 export default function Login() {
     //signup logic form usign state
@@ -15,6 +17,8 @@ export default function Login() {
         setinputs(prev => ({ ...prev, [name]: value }));
     }
     const navigate = useNavigate()
+    const dispatch = useDispatch()
+    const isLoggedIn = useSelector((state) => state.auth.isLoggedIn)
     const handleLogin = async (e) => {
         e.preventDefault()
         try {
@@ -31,10 +35,13 @@ export default function Login() {
             const result = await response.json()
             console.log(result)
             if (response.status === 200) {
+                dispatch(login())
                 navigate("/")
             }
 
         } catch (error) {
+            isLoggedIn = false;
+            localStorage.setItem(isLoggedIn)
             console.log(error)
         }
     }

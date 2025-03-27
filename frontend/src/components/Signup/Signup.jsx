@@ -1,9 +1,13 @@
 import { CheckSquare } from "lucide-react";
 import React, { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
+import { login, logout } from "../../context/AuthSlices";
 
 export default function Signup() {
+
     //signup logic form usign state
+
     const [inputs, setinputs] = useState(
         {
             email: "",
@@ -16,6 +20,8 @@ export default function Signup() {
         setinputs(prev => ({ ...prev, [name]: value }));
     }
     const navigate = useNavigate()
+    const dispatch = useDispatch()
+    const isLoggedIn = useSelector((state) => state.auth.isLoggedIn)
     const handleSignup = async (e) => {
         e.preventDefault()
         try {
@@ -31,10 +37,13 @@ export default function Signup() {
             })
             const result = await response.json()
             if (response.status === 201) {
+                dispatch(login())
                 navigate("/")
             }
 
         } catch (error) {
+            isLoggedIn = false;
+            localStorage.setItem(isLoggedIn)
             console.log(error)
         }
     }
