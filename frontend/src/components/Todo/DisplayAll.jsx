@@ -81,7 +81,7 @@ const isLoggedIn = useSelector((state) => state.auth.isLoggedIn)
       </div>
 
       {/* Add Task Button */}
-      <button className="mt-6 flex items-center gap-2 bg-blue-500 text-white px-5 py-3 rounded-lg shadow-md text-lg font-medium hover:bg-blue-600 transition">
+      <button onClick={() => { navigate('/addTask') }} className="mt-6 flex items-center gap-2 bg-blue-500 text-white px-5 py-3 rounded-lg shadow-md text-lg font-medium hover:bg-blue-600 transition">
         <PlusCircle className="w-6 h-6" /> Add Task
       </button>
     </div>

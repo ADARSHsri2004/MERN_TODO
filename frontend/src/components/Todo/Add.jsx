@@ -1,9 +1,27 @@
 import React, { useState } from "react";
 import { PlusCircle } from "lucide-react";
+import { useDispatch } from "react-redux";
+import { addTaskThunk } from "../../context/TaskSlice";
 
 export default function AddTask() {
     const [title, setTitle] = useState("");
     const [body, setBody] = useState("");
+    const dispatch = useDispatch();
+
+    // Function to handle form submission
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        if (!title || !body) return alert("Please fill in all fields");
+
+        try {
+            await dispatch(addTaskThunk({ title, body })).unwrap();
+            setTitle("");
+            setBody("");
+            alert("Task added successfully!");
+        } catch (error) {
+            alert("Failed to add task");
+        }
+    };
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-purple-500 to-indigo-600 px-4">
@@ -15,7 +33,7 @@ export default function AddTask() {
                 <h2 className="text-3xl font-bold text-gray-800 text-center">Add New Task</h2>
                 <p className="text-sm text-gray-600 text-center mt-2">Stay organized by adding your tasks here.</p>
 
-                <form className="mt-6 space-y-4">
+                <form onSubmit={handleSubmit} className="mt-6 space-y-4">
                     {/* Title Input */}
                     <input
                         type="text"
@@ -40,7 +58,7 @@ export default function AddTask() {
 
                     {/* Add Task Button */}
                     <button
-                        type="submit"
+                        type="submit" 
                         className="w-full bg-purple-500 text-white py-3 rounded-lg text-lg font-semibold hover:bg-purple-600 transition"
                     >
                         Add Task
