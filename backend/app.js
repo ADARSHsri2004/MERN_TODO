@@ -14,6 +14,7 @@ app.use(cors({
 
 conn()
 app.use(express.json());
+app.use(cookieParser());
 app.use('/api/v1', auth)
 app.use('/api/v2', list)
 app.listen(3005, () => {

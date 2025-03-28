@@ -1,9 +1,17 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import { PlusCircle } from "lucide-react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { addTaskThunk } from "../../context/TaskSlice";
+import { useNavigate } from "react-router-dom";
 
 export default function AddTask() {
+    const navigate = useNavigate();
+    const isLoggedIn = useSelector((state) => state.auth.isLoggedIn)
+    useEffect(() => {
+        if (!isLoggedIn)
+            navigate('/login')
+
+    }, [isLoggedIn])
     const [title, setTitle] = useState("");
     const [body, setBody] = useState("");
     const dispatch = useDispatch();
@@ -58,7 +66,7 @@ export default function AddTask() {
 
                     {/* Add Task Button */}
                     <button
-                        type="submit" 
+                        type="submit" onClick={()=>{navigate('/displayAll')}}
                         className="w-full bg-purple-500 text-white py-3 rounded-lg text-lg font-semibold hover:bg-purple-600 transition"
                     >
                         Add Task

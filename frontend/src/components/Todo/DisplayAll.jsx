@@ -1,38 +1,59 @@
 import React, { useEffect, useState } from "react";
 import { CheckCircle, Circle, Trash2, Edit, PlusCircle, ListChecks } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { login, logout } from "../../context/AuthSlices";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
+import { fetchTasks, updateTask, deleteTask } from "../../context/api";
+
+
 export default function DisplayAll() {
-const isLoggedIn = useSelector((state) => state.auth.isLoggedIn)
-
+  const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
+  const userId = useSelector((state) => state.auth.user?.id); // Get user ID from Redux
+  console.log(userId);
   const navigate = useNavigate();
+  const [tasks, setTasks] = useState([]);
+
+  // Redirect to login if not authenticated
   useEffect(() => {
-    if(!isLoggedIn)
-    navigate('/login')
+    if (!isLoggedIn) navigate("/login");
+  }, [isLoggedIn, navigate]);
 
-  }, [isLoggedIn])
-  
+  // Fetch tasks from backend
+  const loadTasks = async () => {
+    if (!userId) return;
+    try {
+      const data = await fetchTasks(userId);
+      setTasks(data);
+    } catch (error) {
+      console.error("Error fetching tasks:", error);
+    }
+  };
 
-
-  const [tasks, setTasks] = useState([
-    { id: 1, title: "Finish Project", description: "Complete the React project for submission.", completed: false },
-    { id: 2, title: "Buy Groceries", description: "Get milk, eggs, and bread from the store.", completed: true },
-    { id: 3, title: "Workout", description: "Go for a 30-minute jog.", completed: false }
-  ]);
+  useEffect(() => {
+    loadTasks();
+  }, [userId]);
 
   // Toggle Task Completion
-  const toggleComplete = (id) => {
-    setTasks(tasks.map(task => task.id === id ? { ...task, completed: !task.completed } : task));
+  const toggleComplete = async (id, completed) => {
+    try {
+      await updateTask(id, { completed: !completed });
+      setTasks(tasks.map(task => (task._id === id ? { ...task, completed: !task.completed } : task)));
+    } catch (error) {
+      console.error("Error toggling task:", error);
+    }
   };
 
   // Delete Task
-  const deleteTask = (id) => {
-    setTasks(tasks.filter(task => task.id !== id));
+  const handleDeleteTask = async (id) => {
+    try {
+      await deleteTask(id);
+      setTasks(tasks.filter(task => task._id !== id));
+    } catch (error) {
+      console.error("Error deleting task:", error);
+    }
   };
 
   // Update Task (Placeholder Function)
-  const updateTask = (id) => {
+  const handleUpdateTask = (id) => {
     alert(`Update Task ${id}`);
   };
 
@@ -46,42 +67,43 @@ const isLoggedIn = useSelector((state) => state.auth.isLoggedIn)
 
       {/* Task List */}
       <div className="w-full max-w-2xl space-y-4">
-        {tasks.map(task => (
-          <div
-            key={task.id}
-            className="relative flex items-center justify-between bg-white shadow-md p-4 rounded-lg hover:bg-blue-50 transition group"
-          >
-            {/* Completion Checkbox */}
-            <button onClick={() => toggleComplete(task.id)} className="mr-3">
-              {task.completed ? <CheckCircle className="w-6 h-6 text-green-500" /> : <Circle className="w-6 h-6 text-gray-400" />}
-            </button>
-
-            {/* Task Info */}
-            <div className="flex-1 relative">
-              <h3 className={`font-semibold text-lg ${task.completed ? "line-through text-gray-500" : "text-gray-800"}`}>
-                {task.title}
-              </h3>
-              {/* Hover Description - Now Above Other Elements */}
-              <p className="absolute left-0 -top-10 w-auto px-3 py-1 text-sm bg-gray-700 text-white rounded opacity-0 group-hover:opacity-100 z-10 transition">
-                {task.description}
-              </p>
-            </div>
-
-            {/* Action Buttons */}
-            <div className="flex gap-3">
-              <button onClick={() => updateTask(task.id)} className="text-blue-500 hover:text-blue-700">
-                <Edit className="w-5 h-5" />
+        {tasks.length === 0 ? (
+          <p className="text-gray-500 text-center">No tasks available.</p>
+        ) : (
+          tasks.map(task => (
+            <div key={task._id} className="relative flex items-center justify-between bg-white shadow-md p-4 rounded-lg hover:bg-blue-50 transition group">
+              {/* Completion Checkbox */}
+              <button onClick={() => toggleComplete(task._id, task.completed)} className="mr-3">
+                {task.completed ? <CheckCircle className="w-6 h-6 text-green-500" /> : <Circle className="w-6 h-6 text-gray-400" />}
               </button>
-              <button onClick={() => deleteTask(task.id)} className="text-red-500 hover:text-red-700">
-                <Trash2 className="w-5 h-5" />
-              </button>
+
+              {/* Task Info */}
+              <div className="flex-1 relative">
+                <h3 className={`font-semibold text-lg ${task.completed ? "line-through text-gray-500" : "text-gray-800"}`}>
+                  {task.title}
+                </h3>
+                {/* Hover Description */}
+                <p className="absolute left-0 -top-10 w-auto px-3 py-1 text-sm bg-gray-700 text-white rounded opacity-0 group-hover:opacity-100 z-10 transition">
+                  {task.body}
+                </p>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex gap-3">
+                <button onClick={() => handleUpdateTask(task._id)} className="text-blue-500 hover:text-blue-700">
+                  <Edit className="w-5 h-5" />
+                </button>
+                <button onClick={() => handleDeleteTask(task._id)} className="text-red-500 hover:text-red-700">
+                  <Trash2 className="w-5 h-5" />
+                </button>
+              </div>
             </div>
-          </div>
-        ))}
+          ))
+        )}
       </div>
 
       {/* Add Task Button */}
-      <button onClick={() => { navigate('/addTask') }} className="mt-6 flex items-center gap-2 bg-blue-500 text-white px-5 py-3 rounded-lg shadow-md text-lg font-medium hover:bg-blue-600 transition">
+      <button onClick={() => navigate("/addTask")} className="mt-6 flex items-center gap-2 bg-blue-500 text-white px-5 py-3 rounded-lg shadow-md text-lg font-medium hover:bg-blue-600 transition">
         <PlusCircle className="w-6 h-6" /> Add Task
       </button>
     </div>

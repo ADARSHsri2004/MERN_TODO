@@ -26,6 +26,7 @@ function App() {
           <Route path="/signup" element={<Signup />} />
           <Route path="/login" element={<Login />} />
           <Route path="/addTask" element={<AddTask />} />
+          <Route path="/displayAll" element={<DisplayAll />} />
         </Routes>
       </Router>
       <Footer />
