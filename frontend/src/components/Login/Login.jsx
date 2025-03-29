@@ -2,7 +2,7 @@ import { LogIn } from "lucide-react";
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
-import { login, logout } from "../../context/AuthSlices";
+import { login, logout, setUser } from "../../context/AuthSlices";
 
 export default function Login() {
     //signup logic form usign state
@@ -33,15 +33,17 @@ export default function Login() {
 
             })
             const result = await response.json()
-            console.log(result)
+            console.log(result.user)
             if (response.status === 200) {
                 dispatch(login())
-                navigate("/")
+                dispatch(setUser(result.user)) 
+                navigate("/") 
             }
 
         } catch (error) {
-            isLoggedIn = false;
-            localStorage.setItem(isLoggedIn)
+            // isLoggedIn = false;
+            // localStorage.setItem(isLoggedIn)
+            dispatch(logout())
             console.log(error)
         }
     }

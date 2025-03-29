@@ -21,7 +21,7 @@ export default function Signup() {
     }
     const navigate = useNavigate()
     const dispatch = useDispatch()
-    const isLoggedIn = useSelector((state) => state.auth.isLoggedIn)
+    let isLoggedIn = useSelector((state) => state.auth.isLoggedIn)
     const handleSignup = async (e) => {
         e.preventDefault()
         try {

@@ -5,7 +5,7 @@ const authJWT = require('../middlewares/authJWT');
 router.post('/addTask', authJWT, async (req, res) => {
     try {
         const { title, body } = req.body;
-        
+
         if (!title || !body) {
             return res.status(400).json({ message: "Please provide all details" })
         }
@@ -31,12 +31,12 @@ router.post('/addTask', authJWT, async (req, res) => {
 })
 router.put('/updateTask/:id', authJWT, async (req, res) => {
     try {
-        const { title, body } = req.body;
+        const { title, body, completed } = req.body;
         const user = await User.findOne({ "email": req.user.email });
         if (!user) {
             return res.status(404).json({ message: "User not found" });
         }
-        const list = await List.findByIdAndUpdate(req.params.id, { title, body });
+        const list = await List.findByIdAndUpdate(req.params.id, { title, body, completed });
         list.save()
         res.status(200).json({ message: "Task updated successfully", list });
     } catch (error) {
@@ -45,13 +45,15 @@ router.put('/updateTask/:id', authJWT, async (req, res) => {
 })
 router.delete('/deleteTask/:id', authJWT, async (req, res) => {
     try {
-        const user = await User.findOneAndUpdate({ "email": req.user.email }, { $pull: { list: req.params.id } });
+        const user = await User.findOneAndUpdate({ "email": req.user.email }, { $pull: { list: req.params.id } })
+        console.log(user)
+        console.log(req.params.id)
         if (!user) {
             return res.status(404).json({ message: "User not found" });
         }
         const list = await List.findByIdAndDelete(req.params.id);
-        list.save()
-        res.status(200).json({ message: "Task deleted successfully" });
+        // list.save()
+        res.status(200).json({ message: "Task deleted successfully", list });
     } catch (error) {
         res.status(500).json({ message: "server error during deleting task" })
     }
@@ -67,6 +69,7 @@ router.get('/getTask/:id', authJWT, async (req, res) => {
         }
 
     } catch (error) {
+        console.log(error)
         res.status(500).json({ message: "server error during getting task" })
     }
 })

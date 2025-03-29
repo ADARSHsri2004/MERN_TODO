@@ -1,14 +1,15 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { CheckCircle, Circle, Trash2, Edit, PlusCircle, ListChecks } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { fetchTasks, updateTask, deleteTask } from "../../context/api";
 
-
 export default function DisplayAll() {
   const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
-  const userId = useSelector((state) => state.auth.user?.id); // Get user ID from Redux
-  console.log(userId);
+  const userId = useSelector((state) => state.auth.user?._id); // Get user ID from Redux
+let taskIds =useSelector((state)=>state.auth.user.list)
+console.log(taskIds[0])
+
   const navigate = useNavigate();
   const [tasks, setTasks] = useState([]);
 
@@ -18,24 +19,30 @@ export default function DisplayAll() {
   }, [isLoggedIn, navigate]);
 
   // Fetch tasks from backend
-  const loadTasks = async () => {
+  const loadTasks = useCallback(async () => {
     if (!userId) return;
     try {
-      const data = await fetchTasks(userId);
-      setTasks(data);
-    } catch (error) {
-      console.error("Error fetching tasks:", error);
-    }
-  };
+        const data = await fetchTasks(userId);
 
-  useEffect(() => {
+        // Update state only if tasks have changed
+        if (JSON.stringify(data.list) !== JSON.stringify(tasks)) { 
+            setTasks(data.list);
+        }
+    } catch (error) {
+        console.error("Error fetching tasks:", error);
+    }
+}, [userId, tasks]);
+
+useEffect(() => {
     loadTasks();
-  }, [userId]);
+}, [loadTasks]); 
+
 
   // Toggle Task Completion
   const toggleComplete = async (id, completed) => {
     try {
       await updateTask(id, { completed: !completed });
+      console.log(tasks)
       setTasks(tasks.map(task => (task._id === id ? { ...task, completed: !task.completed } : task)));
     } catch (error) {
       console.error("Error toggling task:", error);
@@ -45,17 +52,28 @@ export default function DisplayAll() {
   // Delete Task
   const handleDeleteTask = async (id) => {
     try {
-      await deleteTask(id);
-      setTasks(tasks.filter(task => task._id !== id));
+      console.log("handleDeleteTask",id)
+        await deleteTask(id);
+        
+        console.log("handledelte",tasks)
+
+        // setTasks(prevTasks => ({
+        //     ...prevTasks,
+        //     list: prevTasks.filter(task => task.id !== id)  // Ensure only the correct task is deleted
+        // }));
+        setTasks(prevTasks => prevTasks.filter(task => task.id !== id));
     } catch (error) {
-      console.error("Error deleting task:", error);
+        console.error("Error deleting task:", error);
     }
-  };
+};
+
 
   // Update Task (Placeholder Function)
   const handleUpdateTask = (id) => {
     alert(`Update Task ${id}`);
   };
+
+  console.log("tasks ")
 
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col items-center p-6">
@@ -93,7 +111,7 @@ export default function DisplayAll() {
                 <button onClick={() => handleUpdateTask(task._id)} className="text-blue-500 hover:text-blue-700">
                   <Edit className="w-5 h-5" />
                 </button>
-                <button onClick={() => handleDeleteTask(task._id)} className="text-red-500 hover:text-red-700">
+                <button onClick={() => handleDeleteTask(task?._id)} className="text-red-500 hover:text-red-700">
                   <Trash2 className="w-5 h-5" />
                 </button>
               </div>

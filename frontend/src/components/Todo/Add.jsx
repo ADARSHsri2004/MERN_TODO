@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 
 export default function AddTask() {
     const navigate = useNavigate();
-    const isLoggedIn = useSelector((state) => state.auth.isLoggedIn)
+    let isLoggedIn = useSelector((state) => state.auth.isLoggedIn)
     useEffect(() => {
         if (!isLoggedIn)
             navigate('/login')
