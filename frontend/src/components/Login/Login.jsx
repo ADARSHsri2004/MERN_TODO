@@ -22,7 +22,7 @@ export default function Login() {
     const handleLogin = async (e) => {
         e.preventDefault()
         try {
-            const url = "http://localhost:3005/api/v1/signin"
+            const url = "https://mern-todo-server-henna.vercel.app/api/v1/signin"
             const response = await fetch(url, {
                 method: "POST",
                 headers: {

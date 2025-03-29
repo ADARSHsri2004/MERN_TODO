@@ -25,7 +25,7 @@ export default function Signup() {
     const handleSignup = async (e) => {
         e.preventDefault()
         try {
-            const url = "http://localhost:3005/api/v1/signup"
+            const url = "https://mern-todo-server-henna.vercel.app/api/v1/signup"
             const response = await fetch(url, {
                 method: "POST",
                 headers: {

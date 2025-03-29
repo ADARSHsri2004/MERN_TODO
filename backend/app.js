@@ -8,7 +8,7 @@ const list = require('./routes/list')
 const cors = require('cors')
 const cookieParser = require("cookie-parser");
 app.use(cors({
-    origin: "http://localhost:5173", // Frontend URL
+    origin: "https://mern-todo-ivory-ten.vercel.app", // Frontend URL
     credentials: true // Allow cookies
 }));
 

@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:3005/api/v2";
+const API_URL = "https://mern-todo-server-henna.vercel.app/api/v2";
 
 // Fetch all tasks
 export const fetchTasks = async (userId) => {
