@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import { CheckCircle, Circle, Trash2, Edit, PlusCircle, ListChecks } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { fetchTasks, updateTask, deleteTask } from "../../context/api";
+import { fetchTasks, updateTask, deleteTask } from "../../context/Api";
 
 export default function DisplayAll() {
   const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
