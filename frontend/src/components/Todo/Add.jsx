@@ -26,6 +26,7 @@ export default function AddTask() {
             setTitle("");
             setBody("");
             alert("Task added successfully!");
+            window.location.reload();
         } catch (error) {
             alert("Failed to add task");
         }

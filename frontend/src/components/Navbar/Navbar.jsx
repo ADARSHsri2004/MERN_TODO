@@ -22,7 +22,7 @@ export default function Navbar() {
         <nav className="bg-white shadow-md w-full">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-16">
                 {/* Logo */}
-                <div className="text-xl font-bold">LOGO</div>
+                <div className="text-xl font-bold">toDo</div>
 
                 {/* Desktop Menu */}
                 <div className="hidden md:flex space-x-6 items-center">
