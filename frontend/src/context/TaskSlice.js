@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { fetchTasks, addTask, updateTask, deleteTask } from "./api"; // Import API functions
+import { fetchTasks, addTask, updateTask, deleteTask } from "./Api"; // Import API functions
 
 // Async actions
 export const fetchTasksThunk = createAsyncThunk("tasks/fetchTasks", fetchTasks);
