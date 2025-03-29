@@ -47,7 +47,7 @@ router.delete('/deleteTask/:id', authJWT, async (req, res) => {
     try {
         const user = await User.findOneAndUpdate({ "email": req.user.email }, { $pull: { list: req.params.id } })
         console.log(user)
-        console.log(req.params.id)
+       
         if (!user) {
             return res.status(404).json({ message: "User not found" });
         }

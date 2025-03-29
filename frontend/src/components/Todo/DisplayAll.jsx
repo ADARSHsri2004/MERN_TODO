@@ -7,9 +7,7 @@ import { fetchTasks, updateTask, deleteTask } from "../../context/api";
 export default function DisplayAll() {
   const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
   const userId = useSelector((state) => state.auth.user?._id); // Get user ID from Redux
-let taskIds =useSelector((state)=>state.auth.user.list)
-console.log(taskIds[0])
-
+  let taskIds = useSelector((state) => state.auth.user.list)
   const navigate = useNavigate();
   const [tasks, setTasks] = useState([]);
 
@@ -22,29 +20,34 @@ console.log(taskIds[0])
   const loadTasks = useCallback(async () => {
     if (!userId) return;
     try {
-        const data = await fetchTasks(userId);
+      const data = await fetchTasks(userId);
 
-        // Update state only if tasks have changed
-        if (JSON.stringify(data.list) !== JSON.stringify(tasks)) { 
-            setTasks(data.list);
-        }
+      // Update state only if tasks have changed
+      if (JSON.stringify(data.list) !== JSON.stringify(tasks)) {
+        setTasks(data.list);
+      }
     } catch (error) {
-        console.error("Error fetching tasks:", error);
+      console.error("Error fetching tasks:", error);
     }
-}, [userId, tasks]);
+  }, [userId, tasks]);
 
-useEffect(() => {
+  useEffect(() => {
     loadTasks();
-}, [loadTasks]); 
+  }, [loadTasks]);
 
 
   // Toggle Task Completion
   const toggleComplete = async (id, completed) => {
     try {
       await updateTask(id, { completed: !completed });
-      console.log(tasks)
-      setTasks(tasks.map(task => (task._id === id ? { ...task, completed: !task.completed } : task)));
-    } catch (error) {
+
+      setTasks(prevTasks =>
+        prevTasks.map(task =>
+          task._id === id ? { ...task, completed: !task.completed } : task
+        )
+      )
+    }
+    catch (error) {
       console.error("Error toggling task:", error);
     }
   };
@@ -52,28 +55,44 @@ useEffect(() => {
   // Delete Task
   const handleDeleteTask = async (id) => {
     try {
-      console.log("handleDeleteTask",id)
-        await deleteTask(id);
-        
-        console.log("handledelte",tasks)
+      await deleteTask(id);
 
-        // setTasks(prevTasks => ({
-        //     ...prevTasks,
-        //     list: prevTasks.filter(task => task.id !== id)  // Ensure only the correct task is deleted
-        // }));
-        setTasks(prevTasks => prevTasks.filter(task => task.id !== id));
+      // setTasks(prevTasks => ({
+      //     ...prevTasks,
+      //     list: prevTasks.filter(task => task.id !== id)  // Ensure only the correct task is deleted
+      // }));
+      setTasks(prevTasks => prevTasks.filter(task => task.id !== id));
     } catch (error) {
-        console.error("Error deleting task:", error);
+      console.error("Error deleting task:", error);
     }
-};
+  };
 
 
   // Update Task (Placeholder Function)
-  const handleUpdateTask = (id) => {
-    alert(`Update Task ${id}`);
+  const handleUpdateTask = async (id) => {
+    // Prompt user for new task title
+    const newTitle = prompt("Enter new task title:");
+    if (!newTitle) return; // Exit if the user cancels
+    const newBody=prompt("Enter new body:")
+    try {
+      // Send update request to backend
+      await updateTask(id, { title: newTitle,body:newBody});
+
+      // Update state to reflect changes
+      setTasks(prevTasks =>
+        prevTasks.map(task =>
+          task._id === id ? { ...task, title: newTitle ,body:newBody} : task
+        )
+      );
+
+      alert("Task updated successfully!");
+    } catch (error) {
+      console.error("Error updating task:", error);
+      alert("Failed to update task.");
+    }
   };
 
-  console.log("tasks ")
+  console.log(tasks)
 
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col items-center p-6">

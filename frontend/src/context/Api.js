@@ -30,7 +30,7 @@ export const updateTask = async (taskId, task) => {
 
 // Delete a task
 export const deleteTask = async (taskId) => {
-    console.log(taskId)
+    
     await fetch(`${API_URL}/deleteTask/${taskId}`, { method: "DELETE", credentials: "include" });
     return taskId;
 };
