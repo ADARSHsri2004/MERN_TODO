@@ -9,7 +9,7 @@ import logoutUser from "../Logout";
 export default function Navbar() {
     const [isOpen, setIsOpen] = useState(false);
     const dispatch = useDispatch();
-    const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
+    let isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
     const toggleMenu = () => {
         setIsOpen(!isOpen);
     };

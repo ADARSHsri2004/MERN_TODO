@@ -5,7 +5,7 @@ import { useSelector } from "react-redux";
 import { fetchTasks, updateTask, deleteTask } from "../../context/Api";
 
 export default function DisplayAll() {
-  const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
+  let isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
   const userId = useSelector((state) => state.auth.user?._id); // Get user ID from Redux
   let taskIds = useSelector((state) => state.auth.user.list)
   const navigate = useNavigate();
